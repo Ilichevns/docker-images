@@ -7,5 +7,5 @@ RUN apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
         build-essential
 
-CMD su --whitelist-environment=LANG,LANGUAGE,LC_ALL -l debian
+CMD su - debian
 
