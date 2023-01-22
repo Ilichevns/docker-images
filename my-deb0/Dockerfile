@@ -6,6 +6,9 @@ RUN ln -sf /usr/share/zoneinfo/Europe/Moscow  /etc/localtime
 COPY sources.list /etc/apt/sources.list
 
 RUN apt-get update \
+    && DEBIAN_FRONTEND="noninteractive" apt-get install -y apt-utils
+
+RUN apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
         locales \
         vim \
@@ -14,7 +17,8 @@ RUN apt-get update \
         iproute2 \
         screen \
         sudo \
-        man
+        man \
+        procps
 
 # make ru_RU locale
 RUN sed -i -e '/ru_RU.UTF-8/s/^#//' /etc/locale.gen \
