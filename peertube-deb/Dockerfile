@@ -53,15 +53,55 @@ RUN cd /var/www/peertube \
 
 # WIP: Peertube configuration
 # https://docs.joinpeertube.org/install-any-os?id=wrench-peertube-configuration
+RUN cd /var/www/peertube \
+    && sudo -u peertube cp peertube-latest/config/default.yaml config/default.yaml
 
+COPY config/production.yaml /var/www/peertube/config/production.yaml
+
+ENV WEBSERVER_HOST=example.com
+
+# update secret
+RUN cd /var/www/peertube \
+    && SECRET=$(openssl rand -hex 32) \
+    && sed -i 's/_PEERTUBE_SECRET_/'"$SECRET"'/' config/production.yaml
 
 # WIP: Webserver
+RUN cp /var/www/peertube/peertube-latest/support/nginx/peertube /etc/nginx/sites-available/peertube \
+    && sed -i 's/${WEBSERVER_HOST}/'"${WEBSERVER_HOST}"'/g' /etc/nginx/sites-available/peertube \
+    && sed -i 's/${PEERTUBE_HOST}/127.0.0.1:9000/g' /etc/nginx/sites-available/peertube \
+    && ln -s /etc/nginx/sites-available/peertube /etc/nginx/sites-enabled/peertube
 
-# WIP: Database
+# WIP: generate the certificate
+# RUN certbot certonly --standalone --post-hook "/etc/init.d/nginx restart" \
+#     && /etc/init.d/nginx reload
+#   ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
+#   ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem
+RUN mkdir -p /etc/letsencrypt/live/example.com/ \
+    && openssl req -newkey rsa:2048 -nodes -x509 -days 365 \
+    -subj "/C=XX/ST=XX/L=XX/O=XX/CN=example.com" \
+    -keyout /etc/letsencrypt/live/example.com/privkey.pem \
+    -out /etc/letsencrypt/live/example.com/fullchain.pem
+
+# WIP: Database (make database at volume)
+# /var/lib/pgsql/data
+# RUN ls -l /mnt
 RUN /etc/init.d/postgresql start \
     && sudo -u postgres psql -c "CREATE USER peertube WITH PASSWORD 'peertube';" \
-    && sudo -u postgres psql -c '\du' 
+    && sudo -u postgres psql -c '\du' \
+    && sudo -u postgres createdb -O peertube -E UTF8 -T template0 peertube_prod \
+    && sudo -u postgres psql -c "CREATE EXTENSION pg_trgm;" peertube_prod \
+    && sudo -u postgres psql -c "CREATE EXTENSION unaccent;" peertube_prod \
+    && sudo -u postgres psql -c '\l'
 
+# Peertube Start script
+RUN cp /var/www/peertube/peertube-latest/support/init.d/peertube /etc/init.d/ \
+    && chmod 755 /etc/init.d/peertube
 
-CMD su - debian
+CMD bash
+
+# CMD /etc/init.d/postgresql start \
+#     && /etc/init.d/redis-server start \
+#     && /etc/init.d/nginx start
+#     && /bin/bash
+# CMD su - debian
 
