@@ -1,0 +1,18 @@
+version: "3"
+services:
+  peertube:
+    image: peertube0-deb:latest
+    stdin_open: true
+    tty: true
+    command: bash -c '/etc/init.d/postgresql start && /etc/init.d/redis-server start && /etc/init.d/nginx start && { rm /var/www/peertube/peertube-latest/pid/peertube.pid; /etc/init.d/peertube start; } && bash'
+    ports:
+      - "9443:443"
+      - "9080:80"
+    volumes:
+      - ./volumes/postgresql:/var/lib/postgresql
+      - ./volumes/www:/var/www
+      - ./volumes/etc/letsencrypt:/etc/letsencrypt
+      - ./volumes/etc/nginx:/etc/nginx
+      - ./volumes/log:/var/log
+    environment:
+      WEBSERVER_HOST: example.com
