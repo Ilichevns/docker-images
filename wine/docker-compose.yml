@@ -1,0 +1,27 @@
+version: "3.7"
+
+volumes:
+  wine_home:
+
+services:
+  wine:
+    build:
+      context: ./wine
+    container_name: wine-staging
+    environment:
+      - DISPLAY
+      - WINEPREFIX=/wine/wine
+      - WINEARCH=win64
+    volumes:
+    - wine_home:/wine
+    - ${XAUTHORITY}:/root/.Xauthority:ro
+    - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    entrypoint: /bin/bash -c "date; sleep 600"
+#    stdin_open: true # docker run -i
+#    tty: true        # docker run -t
+#    depends_on:
+#    - debian
+  debian:
+    build: 
+      context: ./debian
+
