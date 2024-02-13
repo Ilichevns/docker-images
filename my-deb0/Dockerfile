@@ -18,7 +18,8 @@ RUN apt-get update \
         screen \
         sudo \
         man \
-        procps
+        procps \
+        iputils-ping
 
 # make ru_RU locale
 RUN sed -i -e '/ru_RU.UTF-8/s/^#//' /etc/locale.gen \
