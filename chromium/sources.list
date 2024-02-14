@@ -1,0 +1,5 @@
+# mephi.ru 12
+deb http://mirror.mephi.ru/debian bookworm main contrib non-free non-free-firmware
+deb http://mirror.mephi.ru/debian bookworm-updates main contrib non-free non-free-firmware
+deb http://mirror.mephi.ru/debian-security bookworm-security main contrib non-free non-free-firmware
+deb http://mirror.mephi.ru/debian bookworm-backports main contrib non-free non-free-firmware

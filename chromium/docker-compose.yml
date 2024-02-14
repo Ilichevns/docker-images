@@ -2,17 +2,26 @@ version: "3.7"
 
 services:
   chromium:
-    build:
-      context: .
+    image: chromium:latest
+#    build:
+#      context: .
     container_name: chromium
     environment:
       - DISPLAY
       - PROXY
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
     volumes:
-    - ${HOME}/volumes/chromium:/root/Downloads
-    - ${XAUTHORITY}:/root/.Xauthority:ro
+    - ./chromium:/home/chromium
+    - ${XAUTHORITY}:/home/chromium/.Xauthority:ro
     - /tmp/.X11-unix:/tmp/.X11-unix:ro
-#    entrypoint: /bin/bash -c "date; sleep 600"
+    - /run/user/1000/pulse/native:/run/user/1000/pulse/native
+    devices: 
+    - /dev/dri:/dev/dri
+#    user: "1000:1000"
+#    entrypoint: chromium
+    cap_add:
+    - SYS_ADMIN
+    network_mode: host
 #    stdin_open: true # docker run -i
 #    tty: true        # docker run -t
 

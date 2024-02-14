@@ -1,0 +1,15 @@
+ARG TAG=latest
+FROM alpine:$TAG
+
+RUN apk add --no-cache chromium shadow
+
+RUN groupadd --gid 1000 chromium \
+    && useradd --uid 1000 --gid 1000 --create-home --home-dir /home/chromium chromium
+
+RUN apk add pulseaudio
+
+RUN apk add mpg123 alsa-utils
+
+RUN apk add pulseaudio-utils 
+
+RUN apk add pavucontrol ffplay
