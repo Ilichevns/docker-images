@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  arduino:
+    image: arduino:manual
+#    build:
+#      context: .
+    container_name: arduino
+    environment:
+      - DISPLAY
+      - PROXY
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
+#      - LANG=ru_RU.UTF-8
+#      - LANGUAGE=ru_RU:UTF-8
+    volumes:
+    - ./arduino:/home/arduino
+    - ${XAUTHORITY}:/home/xfreerdp2/.Xauthority:ro
+    - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    - /run/user/1000/pulse/native:/run/user/1000/pulse/native
+    devices: 
+    - /dev/ttyUSB0:/dev/ttyUSB0
+    user: "1000"
+    entrypoint: /bin/bash --login
+    network_mode: host
+    stdin_open: true
+    tty: true
+
+
