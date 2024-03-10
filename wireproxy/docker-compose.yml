@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  wireproxy:
+    image: wireproxy:latest
+    build:
+      context: ./wireproxy
+    container_name: wireproxy
+    volumes:
+    - ./config:/etc/wireproxy
+#    user: "1000:1000"
+    network_mode: host
+
