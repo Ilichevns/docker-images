@@ -1,0 +1,50 @@
+version: "3.7"
+
+services:
+  wireproxy:
+    image: wireproxy:latest
+    build:
+      context: ./wireproxy/wireproxy
+    container_name: wireproxy
+    restart: unless-stopped
+    volumes:
+    - ./wireproxy/config:/etc/wireproxy
+
+  tor-browser:
+    image: tor-browser:latest
+    build:
+      context: .
+    container_name: tor-browser
+    depends_on:
+      - wireproxy
+    restart: unless-stopped
+    environment:
+      - DISPLAY
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
+      - LANG=ru_RU.UTF-8
+      - LANGUAGE=ru_RU:UTF-8
+    volumes:
+    - ./tor-browser:/home/tor-browser
+    - ${XAUTHORITY}:/home/tor-browser/.Xauthority:ro
+    - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    - /run/user/1000/pulse/native:/run/user/1000/pulse/native
+#    devices: 
+#    - /dev/dri:/dev/dri
+    user: "1000:1000"
+    entrypoint: sleep 600
+#    cap_add:
+#    - SYS_ADMIN
+#    network_mode: host
+#    stdin_open: true # docker run -i
+#    tty: true        # docker run -t
+
+  curl:
+    image: curlimages/curl:latest
+#    pull_policy: if_not_present
+    container_name: curl
+    depends_on:
+      - wireproxy
+    entrypoint: sleep 600
+    restart: unless-stopped
+
+
